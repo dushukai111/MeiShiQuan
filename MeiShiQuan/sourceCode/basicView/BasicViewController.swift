@@ -24,7 +24,7 @@ class BasicViewController: UIViewController {
             
         }
     }
-    var backTitle:String="返回"{
+    var backTitle:String=""{
         didSet{
             if let _=self.backLabel{
                 self.backLabel.text=backTitle
@@ -54,6 +54,7 @@ class BasicViewController: UIViewController {
         self.initNavigationBar()
         // Do any additional setup after loading the view.
         self.contentView=UIView()
+//        self.contentView.backgroundColor=UIColor(white: 0.9, alpha: 1.0)
         self.view.addSubview(self.contentView)
         self.contentView.autoPinEdge(.leading, to: .leading, of: self.view)
         self.contentView.autoPinEdge(.top, to: .bottom, of: self.navigationBar)

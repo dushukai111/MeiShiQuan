@@ -143,7 +143,8 @@ class UserInfoViewController: BasicViewController {
         self.navigationController?.pushViewController(modifyEmailVC, animated: true)
     }
     func onPasswordRowTap(){
-        
+        let modifyPwdVC=ModifyPasswordViewController()
+        self.navigationController?.pushViewController(modifyPwdVC, animated: true)
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

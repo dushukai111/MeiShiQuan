@@ -41,6 +41,7 @@ class TabBarViewController: UITabBarController {
     }
     func initTabBarButtons(){
         let tabBarContentView=UIView()
+        tabBarContentView.backgroundColor=UIColor.white
         self.view.addSubview(tabBarContentView)
         tabBarContentView.autoPinEdge(.leading, to: .leading, of: self.view)
         tabBarContentView.autoPinEdge(.trailing, to: .trailing, of: self.view)

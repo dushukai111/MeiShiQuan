@@ -22,7 +22,7 @@ class PasswordSwitch: UIView {
             }
         }
     }
-    var switchChangeBlock:((_ isSwitchOn:Bool)->Void)!
+    var switchChangeBlock:((_ pwdSwitch:UIView,_ isSwitchOn:Bool)->Void)!
     override init(frame: CGRect) {
         super.init(frame: frame)
         imageView=UIImageView()
@@ -48,7 +48,7 @@ class PasswordSwitch: UIView {
             imageView.image=UIImage(named: onImageName)
         }
         if let _=switchChangeBlock {
-            switchChangeBlock(isOn)
+            switchChangeBlock(self,isOn)
         }
     }
     required init?(coder aDecoder: NSCoder) {
