@@ -86,6 +86,10 @@
 		69A586801DED7654001B3AD5 /* ModifyUserNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69A5867F1DED7654001B3AD5 /* ModifyUserNameViewController.swift */; };
 		69A586821DED827A001B3AD5 /* Tools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69A586811DED827A001B3AD5 /* Tools.swift */; };
 		69A586841DED8790001B3AD5 /* ModifyEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69A586831DED8790001B3AD5 /* ModifyEmailViewController.swift */; };
+		69B0DE7D1DEEC3C500FE94F5 /* ModifyPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69B0DE7C1DEEC3C500FE94F5 /* ModifyPasswordViewController.swift */; };
+		69B0DE821DEEC3D700FE94F5 /* PasswordSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69B0DE7F1DEEC3D700FE94F5 /* PasswordSwitch.swift */; };
+		69B0DE831DEEC3D700FE94F5 /* pwd_invisible.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B0DE801DEEC3D700FE94F5 /* pwd_invisible.png */; };
+		69B0DE841DEEC3D700FE94F5 /* pwd_visible.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B0DE811DEEC3D700FE94F5 /* pwd_visible.png */; };
 		69E698DE1DC885070013A830 /* ADScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69E698DD1DC885070013A830 /* ADScrollView.swift */; };
 		69F41C4A1DEC15C0002620CE /* main_functionButton1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 69F41C421DEC15C0002620CE /* main_functionButton1@2x.png */; };
 		69F41C4B1DEC15C0002620CE /* main_functionButton1@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 69F41C431DEC15C0002620CE /* main_functionButton1@3x.png */; };
@@ -209,6 +213,10 @@
 		69A5867F1DED7654001B3AD5 /* ModifyUserNameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModifyUserNameViewController.swift; sourceTree = "<group>"; };
 		69A586811DED827A001B3AD5 /* Tools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tools.swift; sourceTree = "<group>"; };
 		69A586831DED8790001B3AD5 /* ModifyEmailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModifyEmailViewController.swift; sourceTree = "<group>"; };
+		69B0DE7C1DEEC3C500FE94F5 /* ModifyPasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModifyPasswordViewController.swift; sourceTree = "<group>"; };
+		69B0DE7F1DEEC3D700FE94F5 /* PasswordSwitch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordSwitch.swift; sourceTree = "<group>"; };
+		69B0DE801DEEC3D700FE94F5 /* pwd_invisible.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pwd_invisible.png; sourceTree = "<group>"; };
+		69B0DE811DEEC3D700FE94F5 /* pwd_visible.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pwd_visible.png; sourceTree = "<group>"; };
 		69E698DD1DC885070013A830 /* ADScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ADScrollView.swift; sourceTree = "<group>"; };
 		69F41C421DEC15C0002620CE /* main_functionButton1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "main_functionButton1@2x.png"; sourceTree = "<group>"; };
 		69F41C431DEC15C0002620CE /* main_functionButton1@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "main_functionButton1@3x.png"; sourceTree = "<group>"; };
@@ -482,6 +490,7 @@
 		6957FD951DD30E330012E5DB /* selfDefineView */ = {
 			isa = PBXGroup;
 			children = (
+				69B0DE7E1DEEC3D700FE94F5 /* PasswordSwitch */,
 				6957FD961DD30EED0012E5DB /* FunctionButton.swift */,
 			);
 			path = selfDefineView;
@@ -595,8 +604,19 @@
 				69A5867B1DED6166001B3AD5 /* UserInfoViewController.swift */,
 				69A5867F1DED7654001B3AD5 /* ModifyUserNameViewController.swift */,
 				69A586831DED8790001B3AD5 /* ModifyEmailViewController.swift */,
+				69B0DE7C1DEEC3C500FE94F5 /* ModifyPasswordViewController.swift */,
 			);
 			path = userInfo;
+			sourceTree = "<group>";
+		};
+		69B0DE7E1DEEC3D700FE94F5 /* PasswordSwitch */ = {
+			isa = PBXGroup;
+			children = (
+				69B0DE7F1DEEC3D700FE94F5 /* PasswordSwitch.swift */,
+				69B0DE801DEEC3D700FE94F5 /* pwd_invisible.png */,
+				69B0DE811DEEC3D700FE94F5 /* pwd_visible.png */,
+			);
+			path = PasswordSwitch;
 			sourceTree = "<group>";
 		};
 		69E698D91DC8820A0013A830 /* tools */ = {
@@ -700,6 +720,7 @@
 				69F41C4E1DEC15C0002620CE /* main_functionButton3@3x.png in Resources */,
 				69093E5B1DED4B86009FDAE1 /* mine_jifen.png in Resources */,
 				69F41C571DEC3995002620CE /* hotel_icon_test.png in Resources */,
+				69B0DE841DEEC3D700FE94F5 /* pwd_visible.png in Resources */,
 				693ECA101DC7149200FE8AB2 /* tabbar_main_normal@2x.png in Resources */,
 				69F41C541DEC3146002620CE /* jian.png in Resources */,
 				69093E5A1DED4B86009FDAE1 /* mine_jiameng.png in Resources */,
@@ -722,6 +743,7 @@
 				693ECA131DC7149200FE8AB2 /* tabbar_main_selected@3x.png in Resources */,
 				693ECA181DC71AA300FE8AB2 /* tabbar_menu_normal@2x.png in Resources */,
 				693ECA191DC71AA300FE8AB2 /* tabbar_menu_normal@3x.png in Resources */,
+				69B0DE831DEEC3D700FE94F5 /* pwd_invisible.png in Resources */,
 				6936CCFB1DD442ED004B818F /* MJRefresh.bundle in Resources */,
 				693ECA3A1DC73CCC00FE8AB2 /* navi_back_icon.png in Resources */,
 				69093E4F1DED1EB0009FDAE1 /* scroll_to_top_icon@2x.png in Resources */,
@@ -748,6 +770,7 @@
 				69A586841DED8790001B3AD5 /* ModifyEmailViewController.swift in Sources */,
 				6936CCF91DD442ED004B818F /* MJRefreshNormalHeader.m in Sources */,
 				69A5867C1DED6166001B3AD5 /* UserInfoViewController.swift in Sources */,
+				69B0DE821DEEC3D700FE94F5 /* PasswordSwitch.swift in Sources */,
 				693ECA311DC72B8400FE8AB2 /* Colors.swift in Sources */,
 				6936CCFF1DD442ED004B818F /* UIScrollView+MJRefresh.m in Sources */,
 				6936CCEE1DD442ED004B818F /* MJRefreshBackFooter.m in Sources */,
@@ -763,6 +786,7 @@
 				6936CCFC1DD442ED004B818F /* MJRefreshConst.m in Sources */,
 				693ECA3F1DC74C1B00FE8AB2 /* FindViewController.swift in Sources */,
 				693ECA011DC6EDCC00FE8AB2 /* ALView+PureLayout.m in Sources */,
+				69B0DE7D1DEEC3C500FE94F5 /* ModifyPasswordViewController.swift in Sources */,
 				693ECA2F1DC729DE00FE8AB2 /* Dimensions.swift in Sources */,
 				699BF1F51DD5B7870059A681 /* TestView.swift in Sources */,
 				69E698DE1DC885070013A830 /* ADScrollView.swift in Sources */,
