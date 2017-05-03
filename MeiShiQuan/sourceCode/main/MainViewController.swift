@@ -10,11 +10,14 @@ import UIKit
 
 class MainViewController: BasicViewController ,UITableViewDelegate,UITableViewDataSource{
 
+    private let adImageDataPath=NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]+"/adImageDataFile"
     private var areaLabel:UILabel!
     private var searchBarLabel:UILabel!
     private var tableView:UITableView!
+    private var adScrollView:ADScrollView!
     private var scrollToTopView:UIButton!
     private var beginOffset:CGPoint=CGPoint.zero
+    private var adImages:[[String:Any]]!
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -26,7 +29,8 @@ class MainViewController: BasicViewController ,UITableViewDelegate,UITableViewDa
         self.initBarViews()
         self.initTableView()
         self.addScrollToTopView()
-        
+        self.getADImageDataFromCache()
+        self.requestADImages()
         
     }
     private func initTableView(){
@@ -43,7 +47,9 @@ class MainViewController: BasicViewController ,UITableViewDelegate,UITableViewDa
         self.tableView.autoPinEdge(.bottom, to: .bottom, of: self.contentView, withOffset: -tabBarHeight)
         
         let refreshHeader=MJRefreshNormalHeader(refreshingBlock: {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+3, execute: {[unowned self] in
+            [unowned self] in
+            self.requestADImages()
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+3, execute: {
                 self.tableView.mj_header.endRefreshing()
             })
         })
@@ -57,11 +63,9 @@ class MainViewController: BasicViewController ,UITableViewDelegate,UITableViewDa
         let headerView=UIView(frame:CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: headerHeight))
         self.tableView.tableHeaderView=headerView
         
-        let adScrollView=ADScrollView()
+        adScrollView=ADScrollView()
         adScrollView.setDefaultImage(defaultImage: UIImage(named: "ad_default")!)
         adScrollView.imageType = .webImage
-        adScrollView.setImages(images: ["http://img.pconline.com.cn/images/upload/upc/tx/wallpaper/1609/27/c0/27587202_1474952311163_800x600.jpg","http://image100.360doc.com/DownloadImg/2016/09/2200/80557672_26.jpg","http://desk.fd.zol-img.com.cn/t_s960x600c5/g5/M00/0D/0D/ChMkJ1eV_E2IMTEQABERSEVD0poAAT0hAID5McAERFg559.jpg"])
-        adScrollView.loadViews()
         headerView.addSubview(adScrollView)
         adScrollView.setImageClickBlock { (imageIndex:Int) in
             print(imageIndex)
@@ -195,7 +199,7 @@ class MainViewController: BasicViewController ,UITableViewDelegate,UITableViewDa
         if cell==nil{
             cell=MainCell(style: .default, reuseIdentifier: cellId)
         }
-        cell?.imgView.image=UIImage(named: "hotel_icon_test")
+        cell?.imgView.sd_setImage(with: nil, placeholderImage: UIImage(named: "hotel_default"))
         cell?.titleLabel.text="巫山烤鱼"
         cell?.averagePriceLabel.text="100"
         cell?.monthAmountLabel.text="月售234"
@@ -204,7 +208,9 @@ class MainViewController: BasicViewController ,UITableViewDelegate,UITableViewDa
         return cell!
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        let hotelHomeVC=HotelHomeViewController()
+        hotelHomeVC.title="巫山烤鱼"
+        self.navigationController?.pushViewController(hotelHomeVC, animated: true)
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -221,12 +227,49 @@ class MainViewController: BasicViewController ,UITableViewDelegate,UITableViewDa
             })
         }
     }
+    func getADImageDataFromCache(){
+        let fileManager=FileManager.default
+        if fileManager.fileExists(atPath: adImageDataPath) {
+            self.adImages=NSKeyedUnarchiver.unarchiveObject(withFile: adImageDataPath) as? [[String:Any]]!
+            if let _=self.adImages {
+                var imageUrls:[String]=[]
+                for imageInfo in self.adImages{
+                    imageUrls.append(url_adImageUrl+(imageInfo["imageUrl"] as! String))
+                }
+                adScrollView.setImages(images: imageUrls)
+                adScrollView.loadViews()
+            }
+        }
+    }
+    //获取轮播图
+    func requestADImages(){
+        let url=url_serverUrl+"ADImage/getADImages"
+        HttpRequest.getRequest(url: url, params: nil, successBlock: {(responseData:Any?) -> Void in
+            if let _=responseData{
+                self.adImages=responseData as? [[String : Any]]
+                if let _=self.adImages {
+                    var imageUrls:[String]=[]
+                    for imageInfo in self.adImages{
+                        imageUrls.append(url_adImageUrl+(imageInfo["imageUrl"] as! String))
+                    }
+                    self.adScrollView.setImages(images: imageUrls)
+                    self.adScrollView.loadViews()
+                }
+                DispatchQueue.global().async {
+                    NSKeyedArchiver.archiveRootObject(self.adImages, toFile: self.adImageDataPath)
+                }
+                
+            }
+            
+        }, faildBlock: {(errorMsg:String) -> Void in
+            print(errorMsg)
+        })
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-
     /*
     // MARK: - Navigation
 

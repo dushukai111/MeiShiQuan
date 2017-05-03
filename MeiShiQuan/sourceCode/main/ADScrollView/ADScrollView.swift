@@ -77,6 +77,9 @@ class ADScrollView: UIView,UIScrollViewDelegate {
         }
     }
     func loadViews(){
+        if let _=self.timer{
+            self.timer.invalidate()
+        }
         self.imageViews.removeAll()
         for subView in self.scrollView.subviews{
             subView.removeFromSuperview()
@@ -180,9 +183,10 @@ class ADScrollView: UIView,UIScrollViewDelegate {
                 DispatchQueue.global().async {
                     do{
                         let data=try Data(contentsOf: URL(fileURLWithPath: imagePath))
-                        ADScrollView.imageCaches[imageName]=data
-                        let image=UIImage(data: data)
+                        
                         DispatchQueue.main.async {
+                            ADScrollView.imageCaches[imageName]=data
+                            let image=UIImage(data: data)
                             imageView.image=image
                             self.imageStates[index]=2
                         }

@@ -10,3 +10,5 @@ import Foundation
 
 let appThemeColor=UIColor(red: 53/255.0, green: 124/255.0, blue: 241/255.0, alpha: 1.0)
 let appThemeLightColor=UIColor(red: 53/255.0, green: 124/255.0, blue: 241/255.0, alpha: 0.6)
+
+let pageBackgroundColor=UIColor(white: 0.9, alpha: 1.0)

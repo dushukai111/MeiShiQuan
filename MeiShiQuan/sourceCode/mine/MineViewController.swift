@@ -18,8 +18,9 @@ class MineViewController: BasicViewController,UITableViewDataSource,UITableViewD
     
     var userHeadView:UIImageView!
     var userNameLabel:UILabel!
+    var cellPhoneIcon:UIImageView!
     var phoneLabel:UILabel!
-    
+    var notLoginLabel:UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title="我的"
@@ -28,9 +29,11 @@ class MineViewController: BasicViewController,UITableViewDataSource,UITableViewD
         self.contentView.isHidden=true
         self.initData()
         self.initUI()
-        // Do any additional setup after loading the view.
     }
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.initLoginState()
+    }
     func initUI(){
         tableView=UITableView()
         tableView.dataSource=self
@@ -69,7 +72,7 @@ class MineViewController: BasicViewController,UITableViewDataSource,UITableViewD
         userNameLabel.autoPinEdge(.leading, to: .trailing, of: userHeadView, withOffset: 15)
         userNameLabel.autoConstrainAttribute(.bottom, to: .horizontal, of: userHeadView, withOffset: -5)
         
-        let cellPhoneIcon=UIImageView()
+        cellPhoneIcon=UIImageView()
         cellPhoneIcon.image=UIImage(named: "mine_cellPhone")
         headerView.addSubview(cellPhoneIcon)
         cellPhoneIcon.autoPinEdge(.leading, to: .leading, of: userNameLabel)
@@ -84,6 +87,14 @@ class MineViewController: BasicViewController,UITableViewDataSource,UITableViewD
         phoneLabel.autoPinEdge(.leading, to: .trailing, of: cellPhoneIcon, withOffset: 5)
         phoneLabel.autoAlignAxis(.horizontal, toSameAxisOf: cellPhoneIcon)
         
+        notLoginLabel=UILabel()
+        notLoginLabel.font=UIFont.systemFont(ofSize: 16.0)
+        notLoginLabel.textColor=UIColor.white
+        notLoginLabel.text="未登录"
+        headerView.addSubview(notLoginLabel)
+        notLoginLabel.autoPinEdge(.leading, to: .trailing, of: userHeadView, withOffset: 15)
+        notLoginLabel.autoAlignAxis(.horizontal, toSameAxisOf: userHeadView)
+        
         let nextPageIcon=UIImageView()
         nextPageIcon.image=UIImage(named: "nextPage")
         headerView.addSubview(nextPageIcon)
@@ -92,9 +103,41 @@ class MineViewController: BasicViewController,UITableViewDataSource,UITableViewD
         nextPageIcon.autoSetDimensions(to: CGSize(width:20,height:20))
         
     }
+    func initLoginState(){
+        if UserTool.isLogin() {
+            notLoginLabel.isHidden=true
+            userNameLabel.isHidden=false
+            cellPhoneIcon.isHidden=false
+            phoneLabel.isHidden=false
+            if let headUrl=UserTool.getHeadUrl() {
+                userHeadView.sd_setImage(with: URL(string:headUrl), placeholderImage: UIImage(named: "defaultHead"))
+            }
+            if let userName=UserTool.getUserName() {
+                userNameLabel.text=userName
+            }else{
+                userNameLabel.text="未设定"
+            }
+            if let phoneNumber=UserTool.getPhoneNumber() {
+                phoneLabel.text=phoneNumber
+            }
+            
+        }else{
+            notLoginLabel.isHidden=false
+            userNameLabel.isHidden=true
+            cellPhoneIcon.isHidden=true
+            phoneLabel.isHidden=true
+            userHeadView.image=UIImage(named: "defaultHead")
+        }
+    }
     func onHeaderViewTap(){
-        let userInfoVC=UserInfoViewController()
-        self.navigationController?.pushViewController(userInfoVC, animated: true)
+        if UserTool.isLogin() {
+            let userInfoVC=UserInfoViewController()
+            self.navigationController?.pushViewController(userInfoVC, animated: true)
+        }else{
+            let userLoginVC=LoginViewController()
+            self.navigationController?.pushViewController(userLoginVC, animated: true)
+        }
+        
     }
     func initData(){
         dataArray=[[["icon":"mine_jifen","title":"我的积分"],["icon":"mine_shoucang","title":"我的收藏"],["icon":"mine_fuwu","title":"服务中心"],["icon":"mine_jiameng","title":"加盟合作"]],[["icon":"mine_setting","title":"设置"]]]
@@ -118,6 +161,16 @@ class MineViewController: BasicViewController,UITableViewDataSource,UITableViewD
         cell.icon.image=UIImage(named: item["icon"]!)
         cell.titleLabel.text=item["title"]
         return cell
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section==0 {
+            
+        }else if indexPath.section==1{
+            if indexPath.row==0{//设置
+                let settingVC=SettingViewController()
+                self.navigationController?.pushViewController(settingVC, animated: true)
+            }
+        }
     }
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let percent=scrollView.contentOffset.y/50

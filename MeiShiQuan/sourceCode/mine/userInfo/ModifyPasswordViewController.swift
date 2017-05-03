@@ -22,12 +22,6 @@ class ModifyPasswordViewController: BasicViewController {
         self.title="修改密码"
         
         self.initUI()
-        
-        let tap=UITapGestureRecognizer(target: self, action: #selector(onViewTap))
-        self.contentView.addGestureRecognizer(tap)
-    }
-    func onViewTap(){
-        UIApplication.shared.keyWindow?.endEditing(true)
     }
     private func initUI(){
         var labelArray:[String]!=nil
@@ -72,7 +66,8 @@ class ModifyPasswordViewController: BasicViewController {
             
             textFieldArray.append(textField)
             
-            let pwdSwitch=PasswordSwitch()
+            let pwdSwitch=MySwitchView()
+            pwdSwitch.switchType = .security
             pwdSwitch.tag=i
             pwdSwitch.switchChangeBlock={[weak self](switchView:UIView,isOn:Bool) in
                 self?.textFieldArray[switchView.tag].isSecureTextEntry = !isOn
@@ -99,7 +94,73 @@ class ModifyPasswordViewController: BasicViewController {
         submitButton.autoSetDimension(.height, toSize: 40)
     }
     func onSubmitButtonClick(){
+        let oldPwdView=textFieldArray[0]
+        let newPwdView=textFieldArray[1]
+        let confirmPwdView=textFieldArray[2]
+        if modifyType == .modifyPassword {
+            if oldPwdView.text=="" {
+                KGProgressAlertHUD.showAlertMsg(message: "原密码不能为空", controller: self, delaySeconds: 2)
+                return
+            }
+        }
         
+        if newPwdView.text=="" {
+            KGProgressAlertHUD.showAlertMsg(message: "新密码不能为空", controller: self, delaySeconds: 2)
+            return
+        }
+        if confirmPwdView.text=="" {
+            KGProgressAlertHUD.showAlertMsg(message: "密码确认不能为空", controller: self, delaySeconds: 2)
+            return
+        }
+        if newPwdView.text != confirmPwdView.text{
+            KGProgressAlertHUD.showAlertMsg(message: "两次输入的密码不一致", controller: self, delaySeconds: 2)
+            return
+        }
+        if modifyType == .modifyPassword{
+            self.modifyPasswordByOld()
+        }else{
+            self.modifyPassword()
+        }
+        
+    }
+    //通过原密码修改
+    func modifyPasswordByOld(){
+        let oldPassword=textFieldArray[0].text
+        let password=textFieldArray[1].text
+        KGProgressAlertHUD.showSimpleProgress(title: "正在修改密码..", view: self.contentView, offsetToCenterY: -64)
+        let params=["userId":UserTool.getUserId(),"password":password,"oldPassword":oldPassword]
+        HttpRequest.postRequest(url: "\(url_serverUrl)user/modifyPasswordByOld", params: params, successBlock: {(responseData:Any?) in
+            KGProgressAlertHUD.dismissProgressView(view: self.contentView)
+            
+            KGProgressAlertHUD.showAlertMsg(message: "修改成功", controller: self, delaySeconds: 2)
+            UserTool.setPassword(password: password)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+2, execute: {
+                self.navigationController?.popViewController(animated: true)
+            })
+            
+        }, faildBlock: {(errorMsg:String) in
+            KGProgressAlertHUD.dismissProgressView(view: self.contentView)
+            KGProgressAlertHUD.showAlertMsg(message: errorMsg, controller: self, delaySeconds: 3)
+        })
+    }
+    //找回密码过程修改
+    func modifyPassword(){
+        let password=textFieldArray[1].text
+        KGProgressAlertHUD.showSimpleProgress(title: "正在修改密码..", view: self.contentView, offsetToCenterY: -64)
+        let params=["userId":UserTool.getUserId(),"password":password]
+        HttpRequest.postRequest(url: "\(url_serverUrl)user/modifyPassword", params: params, successBlock: {(responseData:Any?) in
+            KGProgressAlertHUD.dismissProgressView(view: self.contentView)
+            
+            KGProgressAlertHUD.showAlertMsg(message: "修改成功", controller: self, delaySeconds: 2)
+            UserTool.setPassword(password: password)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+2, execute: {
+                self.navigationController?.popViewController(animated: true)
+            })
+            
+        }, faildBlock: {(errorMsg:String) in
+            KGProgressAlertHUD.dismissProgressView(view: self.contentView)
+            KGProgressAlertHUD.showAlertMsg(message: errorMsg, controller: self, delaySeconds: 3)
+        })
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

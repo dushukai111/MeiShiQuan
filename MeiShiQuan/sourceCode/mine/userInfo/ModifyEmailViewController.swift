@@ -17,13 +17,7 @@ class ModifyEmailViewController: BasicViewController {
         self.title="修改邮箱"
         self.backTitle=""
         self.initViews()
-        
-        let backViewTap=UITapGestureRecognizer(target: self, action: #selector(onBackViewTap))
-        self.contentView.addGestureRecognizer(backViewTap)
         // Do any additional setup after loading the view.
-    }
-    func onBackViewTap(){
-        UIApplication.shared.keyWindow?.endEditing(true)
     }
     func initViews(){
         let emailContentView=UIView()
@@ -44,6 +38,7 @@ class ModifyEmailViewController: BasicViewController {
         emailView=UITextField()
         emailView.placeholder="请输入邮箱"
         emailView.contentVerticalAlignment = .center
+        emailView.text=UserTool.getEmail()
         emailContentView.addSubview(emailView)
         emailView.autoPinEdge(.leading, to: .leading, of: emailContentView, withOffset: 75)
         emailView.autoPinEdge(.trailing, to: .trailing, of: emailContentView, withOffset: -15)
@@ -65,7 +60,28 @@ class ModifyEmailViewController: BasicViewController {
         submitButton.autoSetDimension(.height, toSize: 40)
     }
     func onSubmitButtonClick(){
-        
+        if emailView.text=="" {
+            KGProgressAlertHUD.showAlertMsg(message: "邮箱不能为空", controller: self, delaySeconds: 3)
+            return
+        }
+        self.modifyEmail()
+    }
+    func modifyEmail(){
+        KGProgressAlertHUD.showSimpleProgress(title: "正在修改邮箱..", view: self.contentView, offsetToCenterY: -64)
+        let params=["userId":UserTool.getUserId(),"email":self.emailView.text]
+        HttpRequest.postRequest(url: "\(url_serverUrl)user/modifyEmail", params: params, successBlock: {(responseData:Any?) in
+            KGProgressAlertHUD.dismissProgressView(view: self.contentView)
+            
+            KGProgressAlertHUD.showAlertMsg(message: "修改成功", controller: self, delaySeconds: 2)
+            UserTool.setEmail(email: self.emailView.text)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+2, execute: {
+                self.navigationController?.popViewController(animated: true)
+            })
+            
+        }, faildBlock: {(errorMsg:String) in
+            KGProgressAlertHUD.dismissProgressView(view: self.contentView)
+            KGProgressAlertHUD.showAlertMsg(message: errorMsg, controller: self, delaySeconds: 3)
+        })
     }
 
     override func didReceiveMemoryWarning() {

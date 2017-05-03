@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BasicViewController: UIViewController {
+class BasicViewController: UIViewController,UIGestureRecognizerDelegate {
 
     private var titleLabel:UILabel!
     private var naviBackView:UIView!
@@ -60,8 +60,11 @@ class BasicViewController: UIViewController {
         self.contentView.autoPinEdge(.top, to: .bottom, of: self.navigationBar)
         self.contentView.autoPinEdge(.trailing, to: .trailing, of: self.view)
         self.contentView.autoPinEdge(.bottom, to: .bottom, of: self.view)
+        
+        let tap=UITapGestureRecognizer(target: self, action: nil)
+        tap.delegate=self
+        self.contentView.addGestureRecognizer(tap)
     }
-
     func initNavigationBar(){
         navigationBar=UIView()
         navigationBar.backgroundColor=appThemeColor
@@ -112,6 +115,11 @@ class BasicViewController: UIViewController {
     }
     func onBackButtonPressed(){
         _=self.navigationController?.popViewController(animated: true)
+    }
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        UIApplication.shared.keyWindow?.endEditing(true)
+        return false
+        
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

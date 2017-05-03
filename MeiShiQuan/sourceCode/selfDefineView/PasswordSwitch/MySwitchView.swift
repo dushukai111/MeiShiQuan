@@ -7,14 +7,33 @@
 //
 
 import UIKit
+enum SwitchType{
+    case normal,security
+}
+class MySwitchView: UIView {
 
-class PasswordSwitch: UIView {
-
-    private let onImageName="pwd_visible"
-    private let offImageName="pwd_invisible"
+    private var onImageName="switch_on"
+    private var offImageName="switch_off"
     private var imageView:UIImageView!
     var isOn = false{
         didSet{
+            if isOn{
+                imageView.image=UIImage(named: onImageName)
+            }else{
+                imageView.image=UIImage(named: offImageName)
+            }
+        }
+    }
+    var switchType:SwitchType = .normal{
+        didSet{
+            if switchType == .normal{
+                onImageName="switch_on"
+                offImageName="switch_off"
+                
+            }else{
+                onImageName="pwd_visible"
+                offImageName="pwd_invisible"
+            }
             if isOn{
                 imageView.image=UIImage(named: onImageName)
             }else{

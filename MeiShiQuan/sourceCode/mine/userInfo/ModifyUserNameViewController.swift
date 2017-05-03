@@ -17,13 +17,7 @@ class ModifyUserNameViewController: BasicViewController {
         self.title="修改用户名"
         self.backTitle=""
         self.initViews()
-        
-        let backViewTap=UITapGestureRecognizer(target: self, action: #selector(onBackViewTap))
-        self.contentView.addGestureRecognizer(backViewTap)
         // Do any additional setup after loading the view.
-    }
-    func onBackViewTap(){
-        UIApplication.shared.keyWindow?.endEditing(true)
     }
     func initViews(){
         let userNameContentView=UIView()
@@ -44,6 +38,7 @@ class ModifyUserNameViewController: BasicViewController {
         userNameView=UITextField()
         userNameView.placeholder="请输入用户名"
         userNameView.contentVerticalAlignment = .center
+        userNameView.text=UserTool.getUserName()
         userNameContentView.addSubview(userNameView)
         userNameView.autoPinEdge(.leading, to: .leading, of: userNameContentView, withOffset: 75)
         userNameView.autoPinEdge(.trailing, to: .trailing, of: userNameContentView, withOffset: -15)
@@ -72,7 +67,28 @@ class ModifyUserNameViewController: BasicViewController {
         submitButton.autoSetDimension(.height, toSize: 40)
     }
     func onSubmitButtonClick(){
-        
+        if userNameView.text=="" {
+            KGProgressAlertHUD.showAlertMsg(message: "用户名不能为空", controller: self, delaySeconds: 3)
+            return
+        }
+        self.modifyUserName()
+    }
+    func modifyUserName(){
+        KGProgressAlertHUD.showSimpleProgress(title: "正在修改用户名..", view: self.contentView, offsetToCenterY: -64)
+        let params=["userId":UserTool.getUserId(),"userName":self.userNameView.text]
+        HttpRequest.postRequest(url: "\(url_serverUrl)user/modifyUserName", params: params, successBlock: {(responseData:Any?) in
+            KGProgressAlertHUD.dismissProgressView(view: self.contentView)
+            
+            KGProgressAlertHUD.showAlertMsg(message: "修改成功", controller: self, delaySeconds: 2)
+            UserTool.setUserName(userName: self.userNameView.text)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+2, execute: {
+                self.navigationController?.popViewController(animated: true)
+            })
+            
+        }, faildBlock: {(errorMsg:String) in
+            KGProgressAlertHUD.dismissProgressView(view: self.contentView)
+            KGProgressAlertHUD.showAlertMsg(message: errorMsg, controller: self, delaySeconds: 3)
+        })
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class UserInfoViewController: BasicViewController {
+class UserInfoViewController: BasicViewController,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
 
     var userHeadView:UIImageView!
     var userNameView:UILabel!
@@ -27,7 +27,10 @@ class UserInfoViewController: BasicViewController {
         initViews()
         // Do any additional setup after loading the view.
     }
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.setUserInfo()
+    }
     func initViews(){
         //头像栏
         let userHeadContentView=UIView()
@@ -131,16 +134,82 @@ class UserInfoViewController: BasicViewController {
         pwdLabel.autoPinEdge(.leading, to: .leading, of: pwdContentView, withOffset: leftLabelLeading)
         pwdLabel.autoAlignAxis(toSuperviewAxis: .horizontal)
     }
-    func onUserHeadRowTap(){
+    func setUserInfo(){
+        if let headUrl=UserTool.getHeadUrl(){
+            userHeadView.sd_setImage(with: URL(string:headUrl), placeholderImage: UIImage(named: "defaultHead"))
+        }
         
+        userNameView.text=UserTool.getUserName()==nil||UserTool.getUserName()=="" ? "未设置":UserTool.getUserName()
+        emailView.text=UserTool.getEmail()==nil||UserTool.getEmail()=="" ? "未设置":UserTool.getEmail()
+    }
+    func onUserHeadRowTap(){
+        let selectionView=SelectionAlertView(title: "上传/修改头像", items: ["拍照","从相册选择"])
+        selectionView.show()
+        selectionView.completeSelectionBlock={(selectedIndex:Int) in
+            let imagePicker=UIImagePickerController()
+            if selectedIndex==0 {
+                imagePicker.sourceType = .camera
+            }else{
+                imagePicker.sourceType = .photoLibrary
+            }
+            imagePicker.delegate=self
+            imagePicker.allowsEditing=true
+            self.navigationController?.present(imagePicker, animated: true, completion: nil)
+        }
+    }
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        picker.dismiss(animated: true, completion: nil)
+        let image=info["UIImagePickerControllerOriginalImage"] as! UIImage
+        var width:CGFloat=image.size.width
+        var height:CGFloat=image.size.height
+        if width>100{
+            width=100
+            height=width*(image.size.height/image.size.width)
+        }
+        if height>100 {
+            height=100
+            width=height*(image.size.width/image.size.height)
+        }
+        let scaleImage=Tools.scaleImage(image: image, size: CGSize(width:width,height:height))
+        let imageData=UIImagePNGRepresentation(scaleImage!)
+        KGProgressAlertHUD.showSimpleProgress(title: "正在上传头像..", view: self.contentView, offsetToCenterY: -64)
+        let manager=AFHTTPSessionManager(sessionConfiguration: .default)
+        print(UserTool.getHeadUrl())
+        manager.post("\(url_serverUrl)user/updateUserHead", parameters: ["userId",(UserTool.getUserId())!], constructingBodyWith: {(formData:AFMultipartFormData) in
+            formData.appendPart(withForm: (UserTool.getUserId()?.data(using: .utf8))!, name: "userId")
+            formData.appendPart(withFileData: imageData!, name: "headImage", fileName: "headImage1", mimeType: "image/jpeg")
+        }, progress: nil, success: {(dataTask:URLSessionDataTask,responseData:Any?)in
+            KGProgressAlertHUD.dismissProgressView(view: self.contentView)
+            let responseDic=responseData as? [String:Any]
+            if let resultDic=responseDic{
+                let code=resultDic["code"] as? String
+                let msg=resultDic["msg"] as? String
+                let data=resultDic["data"] as? [String:String]
+                if code=="0000"{
+                    let headUrl=data?["headUrl"]
+                    UserTool.setHeadUrl(headUrl: headUrl)
+                    print(UserTool.getHeadUrl())
+                    self.setUserInfo()
+                    KGProgressAlertHUD.showAlertMsg(message: "修改头像成功", controller: self, delaySeconds: 3)
+                }else{
+                    KGProgressAlertHUD.showAlertMsg(message: msg, controller: self, delaySeconds: 3)
+                }
+            }else{
+                KGProgressAlertHUD.showAlertMsg(message: "返回数据异常", controller: self, delaySeconds: 3)
+            }
+        }, failure: {(dataTask:URLSessionDataTask?,error:Error) in
+            KGProgressAlertHUD.dismissProgressView(view: self.contentView)
+            KGProgressAlertHUD.showAlertMsg(message: "修改头像异常", controller: self, delaySeconds: 3)
+        })
     }
     func onUserNameRowTap(){
         let modifyUserNameVC=ModifyUserNameViewController()
         self.navigationController?.pushViewController(modifyUserNameVC, animated: true)
     }
     func onEmailRowTap(){
-        let modifyEmailVC=ModifyEmailViewController()
-        self.navigationController?.pushViewController(modifyEmailVC, animated: true)
+        let validateVC=ValidateViewController()
+        validateVC.intent = .modifyEmail
+        self.navigationController?.pushViewController(validateVC, animated: true)
     }
     func onPasswordRowTap(){
         let modifyPwdVC=ModifyPasswordViewController()
